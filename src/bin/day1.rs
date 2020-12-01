@@ -9,6 +9,8 @@ To save your vacation, you need to get all fifty stars by December 25th.
 
 Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
 
+--- Part One ---
+
 Before you leave, the Elves in accounting just need you to fix your expense report (your puzzle input); apparently, something isn't quite adding up.
 
 Specifically, they need you to find the two entries that sum to 2020 and then multiply those two numbers together.
@@ -25,9 +27,19 @@ For example, suppose your expense report contained the following:
 In this list, the two entries that sum to 2020 are 1721 and 299. Multiplying them together produces 1721 * 299 = 514579, so the correct answer is 514579.
 
 Of course, your expense report is much larger. Find the two entries that sum to 2020; what do you get if you multiply them together?
-
 */
-static EXPENESES: [u16; 200] = [
+
+/*
+--- Part Two ---
+
+The Elves in accounting are thankful for your help; one of them even offers you a starfish coin they had left over from a past vacation. They offer you a second one if you can find three numbers in your expense report that meet the same criteria.
+
+Using the above example again, the three entries that sum to 2020 are 979, 366, and 675. Multiplying them together produces the answer, 241861950.
+
+In your expense report, what is the product of the three entries that sum to 2020?
+*/
+
+static EXPENESES: [u32; 200] = [
     1782, 1344, 1974, 1874, 1800, 1973, 1416, 1952, 1982, 1506, 1642, 1514, 1978, 1895, 1747, 1564,
     1398, 1683, 1886, 1492, 1629, 1433, 295, 1793, 1740, 1852, 1697, 1471, 1361, 1751, 1426, 2004,
     1763, 1663, 1742, 1666, 1733, 1880, 1600, 1723, 1478, 1912, 1820, 1615, 1875, 1547, 1554, 752,
@@ -43,29 +55,48 @@ static EXPENESES: [u16; 200] = [
     1603, 1596, 1823, 1700, 1552, 1352, 1621, 1669,
 ];
 
-fn part1() {
-    let mut sorted = EXPENESES.clone();
-    sorted.sort();
-
+fn find_sum_pair(nums: &[u32], target: u32) -> Option<(usize, usize)> {
     let mut i = 0;
-    let mut j = sorted.len() - 1;
+    let mut j = nums.len() - 1;
 
     while i < j {
-        let sum = sorted[i] + sorted[j];
-        if sum == 2020 {
-            break;
-        } else if sum > 2020 {
+        let sum = nums[i] + nums[j];
+        if sum == target {
+            return Some((i, j));
+        } else if sum > target {
             j -= 1;
         } else {
-            // sum < 2020
+            // sum < target
             i += 1;
         }
     }
 
-    let prod = sorted[i] as u32 * sorted[j] as u32;
-    println!("{}*{}={}", sorted[i], sorted[j], prod);
+    None
 }
 
 fn main() {
-    part1();
+    let mut sorted = EXPENESES.clone();
+    sorted.sort();
+
+    {
+        // Part 1
+        let (i, j) = find_sum_pair(&sorted, 2020).unwrap();
+
+        let prod = sorted[i] * sorted[j];
+        println!("Part 1: \n{} * {} = {}", sorted[i], sorted[j], prod);
+    }
+    {
+        // Part 2
+        for v in sorted.iter() {
+            let res = find_sum_pair(&sorted, 2020 - v);
+            match res {
+                Some((i, j)) => {
+                    let prod = sorted[i] * sorted[j] * v;
+                    println!("Part 2: \n{} * {} * {} = {}", v, sorted[i], sorted[j], prod);
+                    break;
+                }
+                None => {}
+            }
+        }
+    }
 }

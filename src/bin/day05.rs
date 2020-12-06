@@ -44,12 +44,56 @@ As a sanity check, look through your list of boarding passes. What is the highes
 */
 
 /*
-PLACEHOLDER_FOR_INSTRUCTIONS_PART_2
+Ding! The "fasten seat belt" signs have turned on. Time to find your seat.
+
+It's a completely full flight, so your seat should be the only missing boarding pass in your list. However, there's a catch: some of the seats at the very front and back of the plane don't exist on this aircraft, so they'll be missing from your list as well.
+
+Your seat wasn't at the very front or back, though; the seats with IDs +1 and -1 from yours will be in your list.
+
+What is the ID of your seat?
 */
 
 static INPUT: &str = include_str!("day05-input.txt");
 
-fn main() {}
+fn main() {
+    let mut used_seats: [bool; 109 * 8] = [false; 109 * 8]; // rows ranges from 9 to 108
+
+    let mut max_seat_id = 0;
+    let mut min_row = 128;
+    let mut max_row = 0;
+
+    for line in INPUT.lines() {
+        let (row, _, seat_id) = parse_seat(line);
+        min_row = min_row.min(row);
+        max_row = max_row.max(row);
+        max_seat_id = max_seat_id.max(seat_id);
+        used_seats[seat_id as usize] = true;
+    }
+
+    // Print seat plan
+    // for row in used_seats.chunks(8) {
+    //     for seat in row.iter() {
+    //         print!("{}", (if *seat { "#" } else { "." }));
+    //     }
+    //     println!("");
+    // }
+
+    let a = used_seats.get(0..).unwrap().iter();
+    let b = used_seats.get(1..).unwrap().iter();
+    let c = used_seats.get(2..).unwrap().iter();
+    let your_seat_id = a
+        .zip(b)
+        .zip(c)
+        .enumerate()
+        .find(|(_, ((pre, cur), next))| **pre && !**cur && **next)
+        .unwrap()
+        .0
+        + 1;
+
+    println!("Your seat id: {:?}", your_seat_id);
+    println!("Max seat id: {}", max_seat_id);
+    println!("Min:Max row id: {}:{}", min_row, max_row);
+}
 
 fn parse_bin(s: &str, on: char) -> u8 {
     let exp = s.len() as u32 - 1;
@@ -69,7 +113,7 @@ fn parse_seat(s: &str) -> (u8, u8, u16) {
     let row = parse_bin(&s.get(0..7).unwrap(), 'B');
     let col = parse_bin(&s.get(7..).unwrap(), 'R');
 
-    (row, col, row as u16*8 + col as u16)
+    (row, col, row as u16 * 8 + col as u16)
 }
 
 #[cfg(test)]

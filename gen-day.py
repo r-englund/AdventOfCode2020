@@ -1,9 +1,6 @@
 import sys
 import os
 
-
-
-
 if len(sys.argv) != 2: 
     print("Usage: {} [day as a int]".format(sys.argv[0]))
     exit()
@@ -45,5 +42,9 @@ with open(rsfile,"w") as f:
     f.write(src)
     
 
+url_instr = 'https://adventofcode.com/2020/day/{}'.format(day)
+url_input = 'https://adventofcode.com/2020/day/{}/input'.format(day)
+print("Find todays instructions at: {}".format(url_instr))
+print("Find todays input at: {}".format(url_input))
 
 

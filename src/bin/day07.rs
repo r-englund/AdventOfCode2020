@@ -35,7 +35,35 @@ How many bag colors can eventually contain at least one shiny gold bag? (The lis
 */
 
 /*
-PLACEHOLDER_FOR_INSTRUCTIONS_PART_2
+--- Part Two ---
+
+It's getting pretty expensive to fly these days - not because of ticket prices, but because of the ridiculous number of bags you need to buy!
+
+Consider again your shiny gold bag and the rules from the above example:
+
+    faded blue bags contain 0 other bags.
+    dotted black bags contain 0 other bags.
+    vibrant plum bags contain 11 other bags: 5 faded blue bags and 6 dotted black bags.
+    dark olive bags contain 7 other bags: 3 faded blue bags and 4 dotted black bags.
+
+So, a single shiny gold bag must contain 1 dark olive bag (and the 7 bags within it) plus 2 vibrant plum bags (and the 11 bags within each of those): 1 + 1*7 + 2 + 2*11 = 32 bags!
+
+Of course, the actual rules have a small chance of going several levels deeper than this example; be sure to count all of the bags, even if the nesting becomes topologically impractical!
+
+Here's another example:
+
+shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.
+
+In this example, a single shiny gold bag must contain 126 other bags.
+
+How many individual bags are required inside your single shiny gold bag?
+
 */
 
 #![feature(str_split_once)]
@@ -96,27 +124,53 @@ fn count_bags(rules: &str) -> usize {
         }
     });
 
-    // for (k, v) in bag_can_be_in.iter() {
-    //     println!("{}: {:?}", k, v);
-    // }
-
     let mut tmp: HashSet<String> = HashSet::new();
     count_bags_helper(&bag_can_be_in, "shiny gold", &mut tmp)
-    //0
+}
+
+fn count_sub_bags_inside_helper(
+    bag_contains: &HashMap<&str, Vec<(usize, &str)>>,
+    bag: &str,
+) -> usize {
+    if let Some(a) = bag_contains.get(bag) {
+        a.iter()
+            .map(|(count, b)| {
+                assert_ne!(*count, 0);
+                *count * (count_sub_bags_inside_helper(&bag_contains, b) + 1)
+            })
+            .sum::<usize>()
+    } else {
+        0
+    }
+}
+
+fn count_bags_inside(rules: &str) -> usize {
+    let bag_contains: HashMap<_, _> = rules.lines().map(parse_line).collect();
+    count_sub_bags_inside_helper(&bag_contains, "shiny gold")
 }
 
 fn main() {
-    println!("{}", count_bags(INPUT));
+    println!("Can carry shiny gold: {}", count_bags(INPUT));
+    println!("Are inside a shiny gold: {}", count_bags_inside(INPUT));
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    static TEST_INPUT: &str = include_str!("day07-test-input.txt");
+    static TEST_INPUT1: &str = include_str!("day07-test-input1.txt");
+    static TEST_INPUT2: &str = include_str!("day07-test-input2.txt");
 
     #[test]
-    fn bag_tests() {
-        assert_eq!(4, count_bags(TEST_INPUT));
+    fn test_part1() {
+        assert_eq!(4, count_bags(TEST_INPUT1));
+        assert_eq!(164, count_bags(INPUT));
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(32, count_bags_inside(TEST_INPUT1));
+        assert_eq!(126, count_bags_inside(TEST_INPUT2));
+        assert_eq!(7872, count_bags_inside(INPUT));
     }
 }

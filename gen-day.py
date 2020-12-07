@@ -24,11 +24,25 @@ PLACEHOLDER_FOR_INSTRUCTIONS
 PLACEHOLDER_FOR_INSTRUCTIONS_PART_2
 */
 
-static INPUT: &str = include_str!("{}-input.txt");
+static INPUT: &str = include_str!("{0}-input.txt");
 
 fn main() {{
 
 }}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    static TEST_INPUT: &str = include_str!("{0}-test-input.txt");
+
+    #[test]
+    fn test_fn() {{
+    }}
+}
+
+
 """.format(daystr)
 
 if os.path.exists(rsfile):

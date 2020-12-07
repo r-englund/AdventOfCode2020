@@ -100,14 +100,23 @@ fn count_yeses(group: &str) -> usize {
         .len()
 }
 
+fn count_helper<F>(input: &str, f: F) -> usize
+where
+    F: Fn(&str) -> usize,
+{
+    input.replace("\r\n", "\n").split("\n\n").map(f).sum()
+}
+
 fn count_total_yeses(input: &str) -> usize {
-    let mut total = 0;
-    for group in input.replace("\r\n", "\n").split("\n\n") {
-        let yeses: HashSet<char> = group.chars().filter(is_answer).collect();
-      //  println!("{}: {:?}", yeses.len(), yeses);
-        total += count_yeses(group);
-    }
-    total
+    count_helper(input, count_yeses)
+}
+
+fn count_all_total_yeses(input: &str) -> usize {
+    input
+        .replace("\r\n", "\n")
+        .split("\n\n")
+        .map(count_all_yeses)
+        .sum()
 }
 
 fn count_all_yeses(group: &str) -> usize {
@@ -120,16 +129,6 @@ fn count_all_yeses(group: &str) -> usize {
             acum.intersection(&cur).copied().collect::<HashSet<char>>()
         })
         .len()
-}
-
-fn count_all_total_yeses(input: &str) -> usize {
-    let mut total = 0;
-    for group in input.replace("\r\n", "\n").split("\n\n") {
-        let yeses: HashSet<char> = group.chars().filter(is_answer).collect();
-       // println!("{}: {:?}", yeses.len(), yeses);
-        total += count_all_yeses(group);
-    }
-    total
 }
 
 fn main() {
@@ -158,6 +157,12 @@ mod tests {
 
     #[test]
     fn group_all_summing() {
-        assert_eq!(6, count_total_yeses(TEST_INPUT));
+        assert_eq!(6, count_all_total_yeses(TEST_INPUT));
+    }
+
+    #[test]
+    fn test_real_data() {
+        assert_eq!(6351, count_total_yeses(INPUT));
+        assert_eq!(3143, count_all_total_yeses(INPUT));
     }
 }

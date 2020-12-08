@@ -32,7 +32,7 @@ fn main() {{
 
 
 #[cfg(test)]
-mod tests {
+mod tests {{
     use super::*;
 
     static TEST_INPUT: &str = include_str!("{0}-test-input.txt");
@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn test_fn() {{
     }}
-}
+}}
 
 
 """.format(daystr)

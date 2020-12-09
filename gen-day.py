@@ -15,6 +15,7 @@ if day < 1 or day > 25:
 daystr = "day{:02}".format(day)
 rsfile = "src/bin/{}.rs".format(daystr)
 inputfile = "src/bin/{}-input.txt".format(daystr)
+testinputfile = "src/bin/{}-test-input.txt".format(daystr)
 
 src = """/*
 PLACEHOLDER_FOR_INSTRUCTIONS
@@ -50,6 +51,9 @@ if os.path.exists(rsfile):
     exit()
 
 with open(inputfile,"w") as f:
+    pass
+
+with open(testinputfile,"w") as f:
     pass
     
 with open(rsfile,"w") as f:
